@@ -182,7 +182,7 @@ function xai_my_class($content){
   
 
   
-  if($values['meta_box_data'][0]){
+  if($values['meta_box_data'][0] && is_single()){
 
     $valores = json_decode($values['meta_box_data'][0]);
  
