@@ -17,38 +17,93 @@ function cd_meta_box_cb()
     global $post;
     $values = get_post_custom( $post->ID );
     $titulo = isset( $values['meta_box_data'] ) ? $values['meta_box_data'][0] : '';
-    // print_r(values);
-    // die;
+
     
      
     // We'll use this nonce field later on when saving.
     wp_nonce_field( 'my_meta_box_nonce', 'meta_box_nonce' );
     ?>
+
     
-    <input type="text" name="meta_box_data" id="meta_box_data" value='<?php echo $titulo; ?>' />
-  <br>
-  <table>
+    <div class="tabela_meta_box">
+
+    <style>
+      .tabela_meta_box table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      .tabela_meta_box td, tabela_meta_box th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+
+        
+      }
+
+      .tabela_meta_box td div{
+        display: flex;
+        align-items: center;
+      }
+
+      .tabela_meta_box td div label{
+        margin-right: 10px;
+      }
+
+      .tabela_meta_box tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+
+      .tabela_meta_box input[type=text] {
+        flex: 1;
+      }
+
+
+
+      .botao_meta_box{
+        padding: 10px 0;
+
+      }
+  </style>
+    <input type="text" style="display:none;" name="meta_box_data" id="meta_box_data" value='<?php echo $titulo; ?>' />
+  
+  <table >
+  <tr>
+    <th style="width:5%">Ativar</th>
+    <th style="width:45%">Titulo</th>
+    <th style="width:45%">Link</th>
+    <th style="width:5%"> - </th>
+  </tr>
     <tr class="linha" data-id="0">
-      <td>
+      <td >
+        
         <label>Ativo</label>
         <input type="checkbox"  />
       </td>
-      <td>
-        <label>Titulo</label>
-        <input type="text"  value="" />
+      <td >
+        <div>
+          <label>Titulo</label>
+          <input type="text"  value="" />
+        </div>
       </td>
-      <td>
-        <label>Link</label>
-        <input type="text"  value="" />
+      <td >
+        <div>
+          <label>Link</label>
+          <input type="text"  value="" />
+      </div>
       </td>
-      <td>
-        <button data-id="1" onclick="excluir(this)">Excluir</button>
+      <td >
+        <button data-id="0" onclick="excluir(this)" class="components-button is-secondary">Excluir</button>
       </td>
     </tr>
   </table>
-  <button onclick="adicionar()">Adicionar</button>
-  <button onclick="salvar()">Salvar</button>
-  <button onclick="montar()">montar</button>
+  <div class="botao_meta_box">
+    <button onclick="adicionar()" class="components-button is-secondary">Adicionar</button>
+    <button onclick="salvar()" class="components-button is-primary">Salvar</button>
+    <button onclick="montar()" style="display:none;">montar</button>
+  </div>
+</div>
 
   <script>
 
@@ -56,14 +111,11 @@ function cd_meta_box_cb()
 
     function montar() {
       var dados = document.querySelector("#meta_box_data").value;
-      //console.log(dados);
 
-      var valores = dados ? JSON.parse(atob(dados)) : [];
-
-      console.log(valores);
+      var valores = dados ? JSON.parse(dados) : [];
 
       valores.forEach((valor, index) => {
-        //console.log(valores[index]);
+
         
         var linha = document.querySelector(`tr[data-id="${index}"]`);
         var inputs = linha.querySelectorAll("input");
@@ -90,8 +142,7 @@ function cd_meta_box_cb()
       });
 
       var final = JSON.stringify(dados);
-      console.log(btoa(final));
-      document.querySelector("#meta_box_data").value = btoa(final);
+      document.querySelector("#meta_box_data").value = final;
     }
 
     function excluir(e) {
@@ -135,13 +186,7 @@ function cd_meta_box_save( $post_id ){
      
     // if our current user can't edit this post, bail
     if( !current_user_can( 'edit_post' ) ) return;
-
-    // now we can actually save the data
-    $allowed = "";
-
-    // print_r($_POST['meta_box_data']);
-    // die;
-      
+   
   if( isset( $_POST['meta_box_data'] ) )
       update_post_meta( $post_id, 'meta_box_data', $_POST['meta_box_data']);
        
@@ -154,23 +199,24 @@ function xai_my_class($content){
   $values = get_post_custom( $post->ID );
 
   $string = '';
-
-  // print_r($values['meta_box_ativo']);
-  // die;
+  $linhas = '';
   
-  if($values['meta_box_ativo'][0] && is_single()){
 
-    $string = '<div style="widows: 100%; min-height: 100px; height: auto; padding: 15px 15px 30px 15px; background-color: #d9d9d9; margin: 60px 15px 75px 15px;">
-    <h5 class="llms-h5 llms-lesson-title llms-lesson-preview" style="font-size: 22px;">Material para download</h5>
-    <ul style="margin-left: 15px;">
-    <li>
-    <a href="' . $values['meta_box_link'][0] . '" target="_blank">' . $values['meta_box_data'][0] . '</a>
-    </li>
-    </ul>
-    </div>'; 
-  } 
+  
+  if($values['meta_box_data'][0]){
 
-    
+    $valores = json_decode($values['meta_box_data'][0]);
+ 
+    $string = '<div style="widows: 100%; min-height: 100px; height: auto; padding: 15px 15px 30px 15px; background-color: #d9d9d9; margin: 60px 15px 75px 15px;"><h5 class="llms-h5 llms-lesson-title llms-lesson-preview" style="font-size: 22px;">Material para download</h5><ul style="margin-left: 15px;">';
+
+    foreach($valores as $valor){
+      if($valor->ativo){
+        $linhas = $linhas . ' <li><a href="' . $valor->link . '" target="_blank">' . $valor->titulo . '</a></li>';
+      }
+     }
+   
+    $string = $string . $linhas. '</ul></div>';
+   } 
 
     $content = $content . $string;
     return $content;
