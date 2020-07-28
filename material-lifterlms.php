@@ -25,149 +25,128 @@ function cd_meta_box_cb()
     ?>
 
     
-    <div class="tabela_meta_box">
+<div class="tabela_meta_box">
 
-    <style>
-      .tabela_meta_box table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-      }
+<style>
+  .tabela_meta_box table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
 
-      .tabela_meta_box td, tabela_meta_box th {
-        border: 1px solid #dddddd;
-        text-align: center;
-        padding: 8px;
+  td,  th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+  }
+  .tabela_meta_box input[type=text] {
+    width: 100%;
+  }
 
-        
-      }
+  .botao_meta_box{
+    padding: 10px 0;
+  }
 
-      .tabela_meta_box td div{
-        display: flex;
-        align-items: center;
-      }
-
-      .tabela_meta_box td div label{
-        margin-right: 10px;
-      }
-
-      .tabela_meta_box tr:nth-child(even) {
-        background-color: #dddddd;
-      }
-
-      .tabela_meta_box input[type=text] {
-        flex: 1;
-      }
-
-
-
-      .botao_meta_box{
-        padding: 10px 0;
-
-      }
+  .tabela_meta_box .none{
+    display: none;
+  }
   </style>
-    <input type="text" style="display:none;" name="meta_box_data" id="meta_box_data" value='<?php echo $titulo; ?>' />
-  
-  <table >
+  <input type="text" class="none" name="meta_box_data" id="meta_box_data" value='<?php echo $titulo; ?>' />
+
+  <table class="tabela_meta_box_table" >
   <tr>
     <th style="width:5%">Ativar</th>
     <th style="width:45%">Titulo</th>
     <th style="width:45%">Link</th>
     <th style="width:5%"> - </th>
   </tr>
-    <tr class="linha" data-id="0">
-      <td >
-        
-        <label>Ativo</label>
-        <input type="checkbox"  />
-      </td>
-      <td >
-        <div>
-          <label>Titulo</label>
-          <input type="text"  value="" />
-        </div>
-      </td>
-      <td >
-        <div>
-          <label>Link</label>
-          <input type="text"  value="" />
-      </div>
-      </td>
-      <td >
-        <button data-id="0" onclick="excluir(this)" class="components-button is-secondary">Excluir</button>
-      </td>
-    </tr>
+  <tr class="tabela_meta_box_linha" data-id="0">
+    <td >
+      <input type="checkbox"  class="tabela_meta_box_input" />
+    </td>
+    <td >
+      <input type="text" value="" class="tabela_meta_box_input" />
+    </td>
+    <td >
+      <input type="text" value="" class="tabela_meta_box_input"/>
+    </td>
+    <td >
+      <button data-id="0" onclick="excluir(this)" class="components-button is-secondary">Excluir</button>
+    </td>
+  </tr>
   </table>
-  <div class="botao_meta_box">
-    <button onclick="adicionar()" class="components-button is-secondary">Adicionar</button>
-    <button onclick="salvar()" class="components-button is-primary">Salvar</button>
-    <button onclick="montar()" style="display:none;">montar</button>
+    <div class="botao_meta_box">
+      <button onclick="adicionar()" class="components-button is-secondary">Adicionar</button>
+      <button onclick="salvar()" class="components-button is-primary">Salvar</button>
+      <button onclick="montar()" class="none">montar</button>
+    </div>
   </div>
-</div>
 
   <script>
 
-    window.onload = montar();
+  window.onload = montar();
 
-    function montar() {
-      var dados = document.querySelector("#meta_box_data").value;
+  function montar() {
+    var dados = document.querySelector("input#meta_box_data").value;
 
-      var valores = dados ? JSON.parse(dados) : [];
+    var valores = dados ? JSON.parse(dados) : [];
 
-      valores.forEach((valor, index) => {
+    valores.forEach((valor, index) => {
 
-        
-        var linha = document.querySelector(`tr[data-id="${index}"]`);
-        var inputs = linha.querySelectorAll("input");
+      
+      var linha = document.querySelector(`tr[data-id="${index}"]`);
+      var inputs = linha.querySelectorAll("input.tabela_meta_box_input");
 
-        inputs[0].checked = valor.ativo;
-        inputs[1].value = valor.titulo;
-        inputs[2].value = valor.link;
+      console.log(inputs);
 
-          adicionar();
+      inputs[0].checked = valor.ativo;
+      inputs[1].value = valor.titulo;
+      inputs[2].value = valor.link;
 
-      });
+        adicionar();
 
-    }
+    });
 
-    function salvar() {
-      var linhas = document.querySelectorAll(".linha");
-      var dados = [];
-      linhas.forEach(linha => {
-        var inputs = linha.querySelectorAll("input");
-        if (inputs[1].value || inputs[2].value) {
-          var dado = { ativo: inputs[0].checked, titulo: inputs[1].value, link: inputs[2].value };
-          dados.push(dado);
-        }
-      });
+  }
 
-      var final = JSON.stringify(dados);
-      document.querySelector("#meta_box_data").value = final;
-    }
+  function salvar() {
+    var linhas = document.querySelectorAll("tr.tabela_meta_box_linha");
+    var dados = [];
+    linhas.forEach(linha => {
+      var inputs = linha.querySelectorAll("input.tabela_meta_box_input");
+      if (inputs[1].value || inputs[2].value) {
+        var dado = { ativo: inputs[0].checked, titulo: inputs[1].value, link: inputs[2].value };
+        dados.push(dado);
+      }
+    });
 
-    function excluir(e) {
-      var id = e.getAttribute("data-id");
-      document.querySelector(`tr[data-id="${id}"]`).remove();
-    }
+    var final = JSON.stringify(dados);
+    document.querySelector("input#meta_box_data").value = final;
+  }
 
-    function adicionar() {
-      let tabela = document.querySelector("table");
-      let referencias = tabela.querySelectorAll("tr");
-      let referencia = referencias[referencias.length - 1];
-      var clone = referencia.cloneNode(true);
-      var id = clone.getAttribute("data-id");
+  function excluir(e) {
+    var id = e.getAttribute("data-id");
+    document.querySelector(`tr[data-id="${id}"]`).remove();
+  }
 
-      clone.setAttribute("data-id", parseInt(id) + 1);
-      var btn = clone.querySelector("button");
-      var inputs = clone.querySelectorAll("input");
+  function adicionar() {
+    let tabela = document.querySelector("table.tabela_meta_box_table");
+    let referencias = tabela.querySelectorAll("tr");
+    let referencia = referencias[referencias.length - 1];
+    var clone = referencia.cloneNode(true);
+    var id = clone.getAttribute("data-id");
 
-      inputs.forEach(input => {
-        input.type != "checkbox" ? input.value = "" : input.checked = false;
-      });
+    clone.setAttribute("data-id", parseInt(id) + 1);
+    var btn = clone.querySelector("button");
+    var inputs = clone.querySelectorAll("input");
 
-      btn.setAttribute("data-id", parseInt(id) + 1);
-      tabela.appendChild(clone);
-    }
+    inputs.forEach(input => {
+      input.type != "checkbox" ? input.value = "" : input.checked = false;
+    });
+
+    btn.setAttribute("data-id", parseInt(id) + 1);
+    tabela.appendChild(clone);
+  }
 
   </script>
   <?php    
