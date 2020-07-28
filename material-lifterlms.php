@@ -49,10 +49,10 @@ function cd_meta_box_cb()
       }
 
       .tabela_meta_box .none {
-        /* display: none; */
+         display: none;
       }
     </style>
-    <input type="text" class="none" name="meta_box_data" id="meta_box_data" value='<?php echo $title; ?>' />
+    <input type="text" class="none" name="meta_box_data" id="meta_box_data" value='<?php echo $titulo; ?>' />
 
     <table class="tabela_meta_box_table">
       <tr>
